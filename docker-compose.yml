@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: buguard_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: buguard_user
+      POSTGRES_PASSWORD: buguard_password
+      POSTGRES_DB: darkatlas_assets
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: buguard_fastapi
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://buguard_user:buguard_password@db:5432/darkatlas_assets
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
